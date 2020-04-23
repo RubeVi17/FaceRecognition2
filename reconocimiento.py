@@ -12,7 +12,7 @@ flabs=flabianos()
 print('Formando...')
 
 #Directorio donde se encuentran las carpetas con las caras de entrenamiento
-dir_faces = 'att_faces/orl_faces'
+dir_faces = 'bd/faces'
 
 #Tamaño para reducir a miniaturas las fotografias
 size = 4
@@ -67,31 +67,47 @@ while True:
         prediction = model.predict(face_resize)
         
          #Dibujamos un rectangulo en las coordenadas del rostro
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 0), 3)
         
         # Escribiendo el nombre de la cara reconocida
         # La variable cara tendra el nombre de la persona reconocida
         cara = '%s' % (names[prediction[0]])
-
+        
+        if flabs.TuSiTuNo(cara) == 'Aceptado':
+            rgb = ((75,249,115))
+        else:
+            rgb = ((0,0,255))
         #Si la prediccion tiene una exactitud menor a 100 se toma como prediccion valida
         if prediction[1]<100 :
+
+            
           #Ponemos el nombre de la persona que se reconoció
-          cv2.putText(frame,'%s - %.0f' % (cara,prediction[1]),(x-10, y-10), cv2.FONT_HERSHEY_PLAIN,1,(0, 255, 0))
+          cv2.putText(frame,'%s - %.0f' % (cara,prediction[1]),(x-10, y-10), cv2.FONT_HERSHEY_DUPLEX,1,(0, 12, 0))
+          if prediction[1] > 60:
+              cv2.putText(frame,'%s' % (flabs.TuSiTuNo(cara)),(x-10, y+200), cv2.FONT_HERSHEY_DUPLEX,1,(rgb) )
+              
+          
 
           #En caso de que la cara sea de algun conocido se realizara determinadas accione          
           #Busca si los nombres de las personas reconocidas estan dentro de los que tienen acceso          
-          #flabs.TuSiTuNo(cara)
+          
 
         #Si la prediccion es mayor a 100 no es un reconomiento con la exactitud suficiente
         elif prediction[1]>101 and prediction[1]<500:           
             #Si la cara es desconocida, poner desconocido
-            cv2.putText(frame, 'Desconocido',(x-10, y-10), cv2.FONT_HERSHEY_PLAIN,1,(0, 255, 0))  
+            cv2.putText(frame, 'Desconocido',(x-10, y-10), cv2.FONT_HERSHEY_TRIPLEX,1,(0, 12, 0))  
 
         #Mostramos la imagen
-        cv2.imshow('OpenCV Reconocimiento facial', frame)
-
+        cv2.imshow('Reconocimiento facial', frame)
+    
+    if prediction[1] > 82:
+        print('Granted')
+        cv2.destroyAllWindows()
+        break
+    
     #Si se presiona la tecla ESC se cierra el programa
     key = cv2.waitKey(10)
     if key == 27:
         cv2.destroyAllWindows()
         break
+

@@ -8,8 +8,9 @@ import numpy
 import sys
 nombre = sys.argv[1]
 
+
 #Directorio donde se encuentra la carpeta con el nombre de la persona
-dir_faces = 'att_faces/orl_faces'
+dir_faces = 'bd/faces'
 path = os.path.join(dir_faces, nombre)
 
 #Tamaño para reducir a miniaturas las fotografias
@@ -50,9 +51,9 @@ while count < 100:
         face_resize = cv2.resize(face, (img_width, img_height))
         
         #Dibujamos un rectangulo en las coordenadas del rostro
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 3)
+        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 12, 0), 3)
         #Ponemos el nombre en el rectagulo
-        cv2.putText(img, nombre, (x - 10, y - 10), cv2.FONT_HERSHEY_PLAIN,1,(0, 255, 0))        
+        cv2.putText(img, nombre, (x - 10, y - 10), cv2.FONT_HERSHEY_DUPLEX,1,(0, 12, 0))        
 
         #El nombre de cada foto es el numero del ciclo
         #Obtenemos el nombre de la foto
@@ -67,7 +68,7 @@ while count < 100:
         count += 1
 
     #Mostramos la imagen
-    cv2.imshow('OpenCV Entrenamiento de '+nombre, img)
+    cv2.imshow('Reconocimiento '+nombre, img)
 
     #Si se presiona la tecla ESC se cierra el programa
     key = cv2.waitKey(10)
