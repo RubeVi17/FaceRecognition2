@@ -6,7 +6,11 @@ import os
 import numpy
 #Se importa la lista de personas con acceso al laboratorio
 from listaPermitidos import flabianos
+import MySQLdb
 flabs=flabianos()
+
+conn = MySQLdb.connect(host='localhost', user='root', passwd='', db='python')
+cursor=conn.cursor()    
 
 # Parte 1: Creando el entrenamiento del modelo
 print('Formando...')
@@ -42,6 +46,7 @@ model.train(images, lables)
 face_cascade = cv2.CascadeClassifier( 'haarcascade_frontalface_default.xml')
 cap = cv2.VideoCapture(0)
 
+
 while True:
     #leemos un frame y lo guardamos
     rval, frame = cap.read()
@@ -52,10 +57,13 @@ while True:
 
     #redimensionar la imagen
     mini = cv2.resize(gray, (int(gray.shape[1] / size), int(gray.shape[0] / size)))
+    
 
     """buscamos las coordenadas de los rostros (si los hay) y
    guardamos su posicion"""
     faces = face_cascade.detectMultiScale(mini)
+    cv2.putText(frame, '%s' % format(len(faces)), (+30, +30), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 3)
+    #print("[INFO] Found {0} Faces!".format(len(faces)))
     
     for i in range(len(faces)):
         face_i = faces[i]
@@ -95,15 +103,16 @@ while True:
         #Si la prediccion es mayor a 100 no es un reconomiento con la exactitud suficiente
         elif prediction[1]>101 and prediction[1]<500:           
             #Si la cara es desconocida, poner desconocido
-            cv2.putText(frame, 'Desconocido',(x-10, y-10), cv2.FONT_HERSHEY_TRIPLEX,1,(0, 12, 0))  
+            cv2.putText(frame, 'Desconocido',(x-10, y-10), cv2.FONT_HERSHEY_TRIPLEX,1,(0, 12, 0))
+            cv2.imwrite("foto.png", frame)
 
         #Mostramos la imagen
         cv2.imshow('Reconocimiento facial', frame)
     
     if prediction[1] > 82:
         print('Granted')
-        cv2.destroyAllWindows()
-        break
+        #cursor.execute("INSERT INTO faces (name,average) values (%s, %s)", (cara, prediction[1]))
+        #conn.commit()
     
     #Si se presiona la tecla ESC se cierra el programa
     key = cv2.waitKey(10)
